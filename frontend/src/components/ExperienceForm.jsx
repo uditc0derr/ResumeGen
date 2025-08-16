@@ -2,6 +2,8 @@ import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 
 const ExperienceForm = ({ data, onChange }) => {
+  const isMobile = window.innerWidth < 768;
+
   const addExperience = () => {
     const newExperience = {
       id: Date.now(),
@@ -30,83 +32,222 @@ const ExperienceForm = ({ data, onChange }) => {
     updateExperience(id, 'description', descriptions);
   };
 
+  const containerStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1.5rem'
+  };
+
+  const experienceCardStyle = {
+    border: '1px solid #e5e7eb',
+    borderRadius: '0.5rem',
+    padding: '1rem',
+    position: 'relative'
+  };
+
+  const deleteButtonStyle = {
+    position: 'absolute',
+    top: '0.5rem',
+    right: '0.5rem',
+    padding: '0.25rem',
+    color: '#ef4444',
+    cursor: 'pointer',
+    border: 'none',
+    backgroundColor: 'transparent',
+    borderRadius: '0.25rem',
+    transition: 'color 0.2s'
+  };
+
+  const titleStyle = {
+    fontWeight: '500',
+    color: '#111827',
+    marginBottom: '1rem'
+  };
+
+  const formGroupStyle = {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem'
+  };
+
+  const gridStyle = {
+    display: 'grid',
+    gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+    gap: '1rem'
+  };
+
+  const dateGridStyle = {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(2, 1fr)',
+    gap: '0.5rem'
+  };
+
+  const labelStyle = {
+    display: 'block',
+    fontSize: '0.875rem',
+    fontWeight: '500',
+    color: '#374151',
+    marginBottom: '0.25rem'
+  };
+
+  const inputStyle = {
+    width: '100%',
+    padding: '0.75rem',
+    border: '1px solid #d1d5db',
+    borderRadius: '0.375rem',
+    boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
+    fontSize: '0.875rem',
+    transition: 'all 0.2s',
+    outline: 'none'
+  };
+
+  const textareaStyle = {
+    ...inputStyle,
+    resize: 'vertical',
+    minHeight: '100px'
+  };
+
+  const helpTextStyle = {
+    fontSize: '0.875rem',
+    color: '#6b7280',
+    marginTop: '0.25rem'
+  };
+
+  const addButtonStyle = {
+    backgroundColor: '#f3f4f6',
+    color: '#374151',
+    fontWeight: '500',
+    padding: '0.75rem 1rem',
+    borderRadius: '0.375rem',
+    border: 'none',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '0.5rem',
+    width: '100%',
+    transition: 'background-color 0.2s'
+  };
+
   return (
-    <div className="space-y-6">
+    <div style={containerStyle}>
       {data.map((experience, index) => (
-        <div key={experience.id} className="border border-gray-200 rounded-lg p-4 relative">
+        <div key={experience.id} style={experienceCardStyle}>
           <button
             onClick={() => removeExperience(experience.id)}
-            className="absolute top-2 right-2 p-1 text-red-500 hover:text-red-700 transition-colors"
+            style={deleteButtonStyle}
+            onMouseEnter={(e) => e.target.style.color = '#dc2626'}
+            onMouseLeave={(e) => e.target.style.color = '#ef4444'}
           >
-            <Trash2 className="w-4 h-4" />
+            <Trash2 style={{ width: '1rem', height: '1rem' }} />
           </button>
 
-          <h3 className="font-medium text-gray-900 mb-4">Experience {index + 1}</h3>
+          <h3 style={titleStyle}>Experience {index + 1}</h3>
           
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div style={formGroupStyle}>
+            <div style={gridStyle}>
               <div>
-                <label className="form-label">Company Name *</label>
+                <label style={labelStyle}>Company Name *</label>
                 <input
                   type="text"
-                  className="form-input"
+                  style={inputStyle}
                   value={experience.company}
                   onChange={(e) => updateExperience(experience.id, 'company', e.target.value)}
                   placeholder="Google, Microsoft, Startup Inc."
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                  }}
                 />
               </div>
 
               <div>
-                <label className="form-label">Location</label>
+                <label style={labelStyle}>Location</label>
                 <input
                   type="text"
-                  className="form-input"
+                  style={inputStyle}
                   value={experience.location}
                   onChange={(e) => updateExperience(experience.id, 'location', e.target.value)}
                   placeholder="San Francisco, CA"
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                  }}
                 />
               </div>
 
               <div>
-                <label className="form-label">Position/Job Title *</label>
+                <label style={labelStyle}>Position/Job Title *</label>
                 <input
                   type="text"
-                  className="form-input"
+                  style={inputStyle}
                   value={experience.position}
                   onChange={(e) => updateExperience(experience.id, 'position', e.target.value)}
                   placeholder="Software Engineer, Product Manager, etc."
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = '#d1d5db';
+                    e.target.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                  }}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div style={dateGridStyle}>
                 <div>
-                  <label className="form-label">Start Date</label>
+                  <label style={labelStyle}>Start Date</label>
                   <input
                     type="text"
-                    className="form-input"
+                    style={inputStyle}
                     value={experience.startDate}
                     onChange={(e) => updateExperience(experience.id, 'startDate', e.target.value)}
                     placeholder="Jan 2023"
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#3b82f6';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#d1d5db';
+                      e.target.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                    }}
                   />
                 </div>
 
                 <div>
-                  <label className="form-label">End Date</label>
+                  <label style={labelStyle}>End Date</label>
                   <input
                     type="text"
-                    className="form-input"
+                    style={inputStyle}
                     value={experience.endDate}
                     onChange={(e) => updateExperience(experience.id, 'endDate', e.target.value)}
                     placeholder="Present"
+                    onFocus={(e) => {
+                      e.target.style.borderColor = '#3b82f6';
+                      e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                    }}
+                    onBlur={(e) => {
+                      e.target.style.borderColor = '#d1d5db';
+                      e.target.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                    }}
                   />
                 </div>
               </div>
             </div>
 
             <div>
-              <label className="form-label">Job Description & Achievements *</label>
+              <label style={labelStyle}>Job Description & Achievements *</label>
               <textarea
-                className="form-textarea"
+                style={textareaStyle}
                 value={experience.description.join('\n')}
                 onChange={(e) => updateDescription(experience.id, e.target.value)}
                 placeholder="• Developed and maintained web applications using React and Node.js
@@ -114,8 +255,16 @@ const ExperienceForm = ({ data, onChange }) => {
 • Improved application performance by 40% through code optimization
 • Collaborated with cross-functional teams to define product requirements"
                 rows={6}
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#3b82f6';
+                  e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#d1d5db';
+                  e.target.style.boxShadow = '0 1px 2px 0 rgba(0, 0, 0, 0.05)';
+                }}
               />
-              <p className="text-sm text-gray-500 mt-1">
+              <p style={helpTextStyle}>
                 Each line will become a bullet point. Start lines with • for best formatting.
               </p>
             </div>
@@ -125,9 +274,11 @@ const ExperienceForm = ({ data, onChange }) => {
 
       <button
         onClick={addExperience}
-        className="btn-secondary flex items-center space-x-2 w-full"
+        style={addButtonStyle}
+        onMouseEnter={(e) => e.target.style.backgroundColor = '#e5e7eb'}
+        onMouseLeave={(e) => e.target.style.backgroundColor = '#f3f4f6'}
       >
-        <Plus className="w-4 h-4" />
+        <Plus style={{ width: '1rem', height: '1rem' }} />
         <span>Add Work Experience</span>
       </button>
     </div>

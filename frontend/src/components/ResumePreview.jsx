@@ -1,6 +1,8 @@
 import React, { forwardRef } from 'react';
 
-const ResumePreview = forwardRef(({ data, sectionOrder = [], visibleSections = [] }, ref) => {
+const ResumePreview = forwardRef(({ data }, ref) => {
+  const isMobile = window.innerWidth < 768;
+
   const hasContent = (section) => {
     if (Array.isArray(section)) {
       return section.length > 0;
@@ -26,7 +28,7 @@ const ResumePreview = forwardRef(({ data, sectionOrder = [], visibleSections = [
     return contacts.map((contact, index) => (
       <React.Fragment key={index}>
         {contact}
-        {index < contacts.length - 1 && <span className="separator">|</span>}
+        {index < contacts.length - 1 && <span style={{ margin: '0 0.5em' }}>|</span>}
       </React.Fragment>
     ));
   };
@@ -43,242 +45,316 @@ const ResumePreview = forwardRef(({ data, sectionOrder = [], visibleSections = [
     return skillCategories;
   };
 
-  const getFontFamily = () => {
-    const fontMap = {
-      cormorant: "'Cormorant Garamond', 'Georgia', serif",
-      arial: "'Arial', sans-serif",
-      times: "'Times New Roman', serif",
-      helvetica: "'Helvetica', 'Arial', sans-serif",
-      georgia: "'Georgia', serif",
-      calibri: "'Calibri', sans-serif"
-    };
-    return fontMap[data.fontSettings?.fontFamily] || fontMap.cormorant;
+  const resumeStyle = {
+    fontFamily: "'Cormorant Garamond', 'Georgia', serif",
+    fontSize: isMobile ? '10pt' : '11pt',
+    color: '#666666',
+    lineHeight: '1.4',
+    maxWidth: '8.5in',
+    padding: isMobile ? '0.3in' : '0.5in',
+    backgroundColor: '#fff',
+    boxShadow: '0 0 20px rgba(0, 0, 0, 0.1)',
+    margin: '0 auto'
   };
 
-  const getCustomStyles = () => {
-    const settings = data.fontSettings || {};
-    return {
-      fontFamily: getFontFamily(),
-      fontSize: settings.fontSize || '11pt',
-      lineHeight: settings.lineHeight || 1.4
-    };
+  const headerStyle = {
+    textAlign: 'center',
+    marginBottom: '0.5em'
   };
 
-  const getHeadingStyles = () => {
-    const settings = data.fontSettings || {};
-    return {
-      fontWeight: settings.boldHeadings ? 'bold' : 'normal'
-    };
+  const nameStyle = {
+    fontFamily: "'Charter', 'Georgia', serif",
+    fontSize: isMobile ? '1.8em' : '2em',
+    color: '#130810',
+    marginBottom: '2pt',
+    fontWeight: 'bold'
   };
 
-  const getSubtitleStyles = () => {
-    const settings = data.fontSettings || {};
-    return {
-      fontStyle: settings.italicSubtitles ? 'italic' : 'normal'
-    };
+  const contactInfoStyle = {
+    fontSize: '0.9em',
+    color: '#666666'
   };
 
-  const getLinkStyles = () => {
-    const settings = data.fontSettings || {};
-    return {
-      textDecoration: settings.underlineLinks ? 'underline' : 'none'
-    };
+  const sectionStyle = {
+    marginBottom: '0.5em'
   };
 
-  const renderSection = (sectionId) => {
-    if (!visibleSections.includes(sectionId)) return null;
+  const sectionTitleStyle = {
+    fontFamily: "'Charter', 'Georgia', serif",
+    fontSize: isMobile ? '1.1em' : '1.2em',
+    color: 'rgb(36%, 54%, 66%)',
+    textTransform: 'uppercase',
+    fontWeight: 'bold',
+    marginBottom: '0.1em',
+    borderBottom: '1px solid #130810',
+    paddingBottom: '5pt'
+  };
 
-    switch (sectionId) {
-      case 'summary':
-        return hasContent(data.summary) && (
-          <section key="summary">
-            <h2 style={getHeadingStyles()}>Summary</h2>
-            <p>{data.summary}</p>
-          </section>
-        );
+  const resumeSubheadingStyle = {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: isMobile ? 'flex-start' : 'baseline',
+    marginBottom: '7pt',
+    flexDirection: isMobile ? 'column' : 'row'
+  };
 
-      case 'experience':
-        return hasContent(data.experience) && (
-          <section key="experience">
-            <h2 style={getHeadingStyles()}>Experience</h2>
-            {data.experience.map(exp => (
-              <div key={exp.id}>
-                <div className="resume-subheading">
-                  <div>
-                    <div className="title" style={getHeadingStyles()}>{exp.position}</div>
-                    <div className="subtitle" style={getSubtitleStyles()}>{exp.company}</div>
-                  </div>
-                  <div>
-                    <div className="location" style={getSubtitleStyles()}>{exp.location}</div>
-                    <div className="date" style={getSubtitleStyles()}>
-                      {exp.startDate && exp.endDate 
-                        ? `${exp.startDate} – ${exp.endDate}`
-                        : exp.startDate || exp.endDate
-                      }
-                    </div>
-                  </div>
-                </div>
-                {exp.description.length > 0 && (
-                  <ul className="resume-item-list">
-                    {exp.description.map((desc, index) => (
-                      <li key={index}>{desc.replace(/^•\s*/, '')}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </section>
-        );
+  const titleStyle = {
+    fontWeight: 'bold',
+    fontSize: '1.1em',
+    color: '#130810'
+  };
 
-      case 'education':
-        return hasContent(data.education) && (
-          <section key="education">
-            <h2 style={getHeadingStyles()}>Education</h2>
-            {data.education.map(edu => (
-              <div key={edu.id}>
-                <div className="resume-subheading">
-                  <div>
-                    <div className="title" style={getHeadingStyles()}>{edu.institution}</div>
-                    <div className="subtitle" style={getSubtitleStyles()}>
-                      {edu.degree}{edu.field && `, ${edu.field}`}
-                      {edu.gpa && ` • GPA: ${edu.gpa}`}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="location" style={getSubtitleStyles()}>{edu.location}</div>
-                    <div className="date" style={getSubtitleStyles()}>
-                      {edu.startDate && edu.endDate 
-                        ? `${edu.startDate} – ${edu.endDate}`
-                        : edu.startDate || edu.endDate
-                      }
-                    </div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </section>
-        );
+  const subtitleStyle = {
+    fontStyle: 'italic',
+    fontSize: '1em',
+    color: '#130810'
+  };
 
-      case 'skills':
-        return hasContent(data.skills) && (
-          <section key="skills">
-            <h2 style={getHeadingStyles()}>Technical Skills</h2>
-            <ul className="skills-list">
-              {formatSkillsSection().map((category, index) => (
-                <li key={index}>
-                  <span className="category" style={getHeadingStyles()}>{category.name}: </span>
-                  <span className="items">{category.items.join(', ')}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
+  const locationDateStyle = {
+    fontStyle: 'italic',
+    fontSize: isMobile ? '0.85em' : '0.9em',
+    color: '#130810'
+  };
 
-      case 'projects':
-        return hasContent(data.projects) && (
-          <section key="projects">
-            <h2 style={getHeadingStyles()}>Projects</h2>
-            {data.projects.map(project => (
-              <div key={project.id}>
-                <div className="resume-subheading">
-                  <div>
-                    <div className="title" style={getHeadingStyles()}>
-                      {project.liveLink ? (
-                        <a href={project.liveLink} style={getLinkStyles()}>{project.name}</a>
-                      ) : (
-                        project.name
-                      )}
-                      {project.githubLink && (
-                        <>
-                          {' • '}
-                          <a href={project.githubLink} style={getLinkStyles()}>GitHub</a>
-                        </>
-                      )}
-                    </div>
-                    {project.technologies && (
-                      <div className="subtitle" style={getSubtitleStyles()}>{project.technologies}</div>
-                    )}
-                  </div>
-                </div>
-                {project.description.length > 0 && (
-                  <ul className="resume-item-list">
-                    {project.description.map((desc, index) => (
-                      <li key={index}>{desc.replace(/^•\s*/, '')}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </section>
-        );
+  const itemListStyle = {
+    listStyle: 'none',
+    marginLeft: '0.1in',
+    marginBottom: '-5pt'
+  };
 
-      case 'achievements':
-        return hasContent(data.achievements) && (
-          <section key="achievements">
-            <h2 style={getHeadingStyles()}>Achievements</h2>
-            <ul className="resume-item-list">
-              {data.achievements.map(achievement => (
-                <li key={achievement.id}>
-                  <strong>{achievement.title}</strong>
-                  {achievement.date && ` (${achievement.date})`}
-                  {achievement.description && ` - ${achievement.description}`}
-                </li>
-              ))}
-            </ul>
-          </section>
-        );
+  const itemStyle = {
+    position: 'relative',
+    paddingLeft: '0.5em',
+    marginBottom: '0.2em',
+    fontSize: '0.9em',
+    color: '#666666'
+  };
 
-      case 'extracurriculars':
-        return hasContent(data.extracurriculars) && (
-          <section key="extracurriculars">
-            <h2 style={getHeadingStyles()}>Extracurricular Activities</h2>
-            {data.extracurriculars.map(extra => (
-              <div key={extra.id}>
-                <div className="resume-subheading">
-                  <div>
-                    <div className="title" style={getHeadingStyles()}>{extra.organization}</div>
-                    {extra.position && (
-                      <div className="subtitle" style={getSubtitleStyles()}>{extra.position}</div>
-                    )}
-                  </div>
-                  <div className="date" style={getSubtitleStyles()}>
-                    {extra.startDate && extra.endDate 
-                      ? `${extra.startDate} – ${extra.endDate}`
-                      : extra.startDate || extra.endDate
-                    }
-                  </div>
-                </div>
-                {extra.description.length > 0 && (
-                  <ul className="resume-item-list">
-                    {extra.description.map((desc, index) => (
-                      <li key={index}>{desc.replace(/^•\s*/, '')}</li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            ))}
-          </section>
-        );
+  const skillsListStyle = {
+    listStyle: 'none'
+  };
 
-      default:
-        return null;
-    }
+  const skillItemStyle = {
+    marginBottom: '1.2pt'
+  };
+
+  const skillCategoryStyle = {
+    fontWeight: 'bold',
+    fontSize: '1em',
+    color: '#130810'
+  };
+
+  const skillItemsStyle = {
+    color: '#666666'
+  };
+
+  const linkStyle = {
+    color: '#0E5484',
+    textDecoration: 'none'
   };
 
   return (
-    <div ref={ref} className="resume-preview" style={getCustomStyles()}>
+    <div ref={ref} style={resumeStyle}>
       {/* Header */}
-      <header>
+      <header style={headerStyle}>
         {data.personalInfo.fullName && (
-          <h1 style={getHeadingStyles()}>{data.personalInfo.fullName}</h1>
+          <h1 style={nameStyle}>{data.personalInfo.fullName}</h1>
         )}
-        <div className="contact-info">
-          <span style={getLinkStyles()}>{formatContactInfo()}</span>
+        <div style={contactInfoStyle}>
+          {formatContactInfo()}
         </div>
       </header>
 
-      {/* Render sections in custom order */}
-      {sectionOrder.map(section => renderSection(section.id))}
+      {/* Summary */}
+      {hasContent(data.summary) && (
+        <section style={sectionStyle}>
+          <h2 style={sectionTitleStyle}>Summary</h2>
+          <p>{data.summary}</p>
+        </section>
+      )}
+
+      {/* Experience */}
+      {hasContent(data.experience) && (
+        <section style={sectionStyle}>
+          <h2 style={sectionTitleStyle}>Experience</h2>
+          {data.experience.map(exp => (
+            <div key={exp.id}>
+              <div style={resumeSubheadingStyle}>
+                <div>
+                  <div style={titleStyle}>{exp.position}</div>
+                  <div style={subtitleStyle}>{exp.company}</div>
+                </div>
+                <div>
+                  <div style={locationDateStyle}>{exp.location}</div>
+                  <div style={locationDateStyle}>
+                    {exp.startDate && exp.endDate 
+                      ? `${exp.startDate} – ${exp.endDate}`
+                      : exp.startDate || exp.endDate
+                    }
+                  </div>
+                </div>
+              </div>
+              {exp.description.length > 0 && (
+                <ul style={itemListStyle}>
+                  {exp.description.map((desc, index) => (
+                    <li key={index} style={{
+                      ...itemStyle,
+                      '::before': {
+                        content: '"•"',
+                        position: 'absolute',
+                        left: '0',
+                        fontSize: '0.6em',
+                        color: '#666666',
+                        lineHeight: '1.4'
+                      }
+                    }}>
+                      <span style={{ position: 'absolute', left: '0', fontSize: '0.6em', lineHeight: '1.4' }}>•</span>
+                      {desc.replace(/^•\s*/, '')}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* Education */}
+      {hasContent(data.education) && (
+        <section style={sectionStyle}>
+          <h2 style={sectionTitleStyle}>Education</h2>
+          {data.education.map(edu => (
+            <div key={edu.id}>
+              <div style={resumeSubheadingStyle}>
+                <div>
+                  <div style={titleStyle}>{edu.institution}</div>
+                  <div style={subtitleStyle}>
+                    {edu.degree}{edu.field && ` in ${edu.field}`}
+                    {edu.gpa && ` • GPA: ${edu.gpa}`}
+                  </div>
+                </div>
+                <div>
+                  <div style={locationDateStyle}>{edu.location}</div>
+                  <div style={locationDateStyle}>
+                    {edu.startDate && edu.endDate 
+                      ? `${edu.startDate} – ${edu.endDate}`
+                      : edu.startDate || edu.endDate
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* Technical Skills */}
+      {hasContent(data.skills) && (
+        <section style={sectionStyle}>
+          <h2 style={sectionTitleStyle}>Technical Skills</h2>
+          <ul style={skillsListStyle}>
+            {formatSkillsSection().map((category, index) => (
+              <li key={index} style={skillItemStyle}>
+                <span style={skillCategoryStyle}>{category.name}: </span>
+                <span style={skillItemsStyle}>{category.items.join(', ')}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Projects */}
+      {hasContent(data.projects) && (
+        <section style={sectionStyle}>
+          <h2 style={sectionTitleStyle}>Projects</h2>
+          {data.projects.map(project => (
+            <div key={project.id}>
+              <div style={resumeSubheadingStyle}>
+                <div>
+                  <div style={titleStyle}>
+                    {project.liveLink ? (
+                      <a href={project.liveLink} style={linkStyle}>{project.name}</a>
+                    ) : (
+                      project.name
+                    )}
+                    {project.githubLink && (
+                      <>
+                        {' • '}
+                        <a href={project.githubLink} style={linkStyle}>GitHub</a>
+                      </>
+                    )}
+                  </div>
+                  {project.technologies && (
+                    <div style={subtitleStyle}>{project.technologies}</div>
+                  )}
+                </div>
+              </div>
+              {project.description.length > 0 && (
+                <ul style={itemListStyle}>
+                  {project.description.map((desc, index) => (
+                    <li key={index} style={itemStyle}>
+                      <span style={{ position: 'absolute', left: '0', fontSize: '0.6em', lineHeight: '1.4' }}>•</span>
+                      {desc.replace(/^•\s*/, '')}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* Achievements */}
+      {hasContent(data.achievements) && (
+        <section style={sectionStyle}>
+          <h2 style={sectionTitleStyle}>Achievements</h2>
+          <ul style={itemListStyle}>
+            {data.achievements.map(achievement => (
+              <li key={achievement.id} style={itemStyle}>
+                <span style={{ position: 'absolute', left: '0', fontSize: '0.6em', lineHeight: '1.4' }}>•</span>
+                <strong>{achievement.title}</strong>
+                {achievement.date && ` (${achievement.date})`}
+                {achievement.description && ` - ${achievement.description}`}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+
+      {/* Extracurricular Activities */}
+      {hasContent(data.extracurriculars) && (
+        <section style={sectionStyle}>
+          <h2 style={sectionTitleStyle}>Extracurricular Activities</h2>
+          {data.extracurriculars.map(extra => (
+            <div key={extra.id}>
+              <div style={resumeSubheadingStyle}>
+                <div>
+                  <div style={titleStyle}>{extra.organization}</div>
+                  {extra.position && (
+                    <div style={subtitleStyle}>{extra.position}</div>
+                  )}
+                </div>
+                <div style={locationDateStyle}>
+                  {extra.startDate && extra.endDate 
+                    ? `${extra.startDate} – ${extra.endDate}`
+                    : extra.startDate || extra.endDate
+                  }
+                </div>
+              </div>
+              {extra.description.length > 0 && (
+                <ul style={itemListStyle}>
+                  {extra.description.map((desc, index) => (
+                    <li key={index} style={itemStyle}>
+                      <span style={{ position: 'absolute', left: '0', fontSize: '0.6em', lineHeight: '1.4' }}>•</span>
+                      {desc.replace(/^•\s*/, '')}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+        </section>
+      )}
     </div>
   );
 });

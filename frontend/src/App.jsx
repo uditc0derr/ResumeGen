@@ -15,23 +15,11 @@ import ResumePreview from './components/ResumePreview';
 
 // Initial state structure
 const initialState = {
-  personalInfo: {
-    fullName: '',
-    email: '',
-    phone: '',
-    linkedin: '',
-    github: '',
-    website: ''
-  },
+  personalInfo: { fullName: '', email: '', phone: '', linkedin: '', github: '', website: '' },
   summary: '',
   experience: [],
   education: [],
-  skills: {
-    programmingLanguages: [],
-    frameworks: [],
-    tools: [],
-    databases: []
-  },
+  skills: { programmingLanguages: [], frameworks: [], tools: [], databases: [] },
   projects: [],
   achievements: [],
   extracurriculars: []
@@ -41,38 +29,40 @@ function App() {
   const [resumeData, setResumeData] = useState(initialState);
   const [activeSection, setActiveSection] = useState('personalInfo');
   const [isSaved, setIsSaved] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const resumeRef = useRef();
 
-  // Load data from localStorage on mount
+  // Responsive
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Load from localStorage
   useEffect(() => {
     const savedData = localStorage.getItem('resumeData');
     if (savedData) {
       try {
         setResumeData(JSON.parse(savedData));
-      } catch (error) {
-        console.error('Error loading saved data:', error);
+      } catch (err) {
+        console.error('Error loading saved data:', err);
       }
     }
   }, []);
 
-  // Save data to localStorage whenever resumeData changes
+  // Debounced save
   useEffect(() => {
-    localStorage.setItem('resumeData', JSON.stringify(resumeData));
     setIsSaved(false);
-    
-    // Auto-save after 1 second of no changes
     const timer = setTimeout(() => {
+      localStorage.setItem('resumeData', JSON.stringify(resumeData));
       setIsSaved(true);
     }, 1000);
-
     return () => clearTimeout(timer);
   }, [resumeData]);
 
   const handleDataChange = (section, data) => {
-    setResumeData(prev => ({
-      ...prev,
-      [section]: data
-    }));
+    setResumeData(prev => ({ ...prev, [section]: data }));
   };
 
   const handlePrint = useReactToPrint({
@@ -80,6 +70,13 @@ function App() {
     documentTitle: `${resumeData.personalInfo.fullName || 'Resume'}.pdf`,
     pageStyle: '@page { margin: 0.5in; }'
   });
+
+  const clearAllData = () => {
+    if (window.confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+      setResumeData(initialState);
+      localStorage.removeItem('resumeData');
+    }
+  };
 
   const sections = [
     { id: 'personalInfo', label: 'Personal Info', component: PersonalInfoForm },
@@ -95,50 +92,62 @@ function App() {
   const renderActiveForm = () => {
     const section = sections.find(s => s.id === activeSection);
     if (!section) return null;
-
     const Component = section.component;
-    return (
-      <Component
-        data={resumeData[activeSection]}
-        onChange={(data) => handleDataChange(activeSection, data)}
-      />
-    );
+    return <Component data={resumeData[activeSection]} onChange={data => handleDataChange(activeSection, data)} />;
   };
 
-  const clearAllData = () => {
-    if (window.confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-      setResumeData(initialState);
-      localStorage.removeItem('resumeData');
-    }
-  };
+  // --- Styles ---
+  const mainContainerStyle = { minHeight: '100vh', backgroundColor: '#f9fafb' };
+  const headerStyle = { backgroundColor: '#fff', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', borderBottom: '1px solid #e5e7eb' };
+  const headerContainerStyle = { maxWidth: '1280px', margin: '0 auto', padding: isMobile ? '0 1rem' : '0 1.5rem' };
+  const headerContentStyle = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '1rem 0', flexDirection: isMobile ? 'column' : 'row', gap: isMobile ? '1rem' : '0' };
+  const logoStyle = { display: 'flex', alignItems: 'center', gap: '0.75rem' };
+  const titleStyle = { fontSize: isMobile ? '1.5rem' : '1.875rem', fontWeight: 'bold', color: '#111827' };
+  const headerActionsStyle = { display: 'flex', alignItems: 'center', gap: '1rem', flexDirection: isMobile ? 'column' : 'row', width: isMobile ? '100%' : 'auto' };
+  const saveStatusStyle = { display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.875rem', color: '#6b7280' };
+  const btnPrimaryStyle = { backgroundColor: '#2563eb', color: 'white', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', transition: 'background-color 0.2s', width: isMobile ? '100%' : 'auto', justifyContent: 'center' };
+  const btnSecondaryStyle = { backgroundColor: '#f3f4f6', color: '#374151', fontWeight: '500', padding: '0.5rem 1rem', borderRadius: '0.375rem', border: 'none', cursor: 'pointer', transition: 'background-color 0.2s', width: isMobile ? '100%' : 'auto', justifyContent: 'center' };
+  const contentStyle = { maxWidth: '1280px', margin: '0 auto', padding: isMobile ? '1rem' : '2rem 1.5rem' };
+  const layoutStyle = { display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: '2rem' };
+  const formSectionStyle = { width: isMobile ? '100%' : '50%' };
+  const previewSectionStyle = { width: isMobile ? '100%' : '50%' };
+  const sectionCardStyle = { backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e5e7eb', padding: '1.5rem', marginBottom: '1.5rem' };
+  const navigationGridStyle = { display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2,1fr)' : 'repeat(4,1fr)', gap: '0.5rem' };
+  const navButtonStyle = isActive => ({ padding: '0.75rem', borderRadius: '0.375rem', fontSize: '0.875rem', fontWeight: '500', transition: 'all 0.2s', border: '1px solid', cursor: 'pointer', textAlign: 'center', backgroundColor: isActive ? '#dbeafe' : '#f9fafb', color: isActive ? '#1d4ed8' : '#374151', borderColor: isActive ? '#93c5fd' : '#e5e7eb' });
+  const sectionTitleStyle = { fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1.5rem' };
+  const previewContainerStyle = { position: isMobile ? 'static' : 'sticky', top: isMobile ? 'auto' : '2rem' };
+  const previewCardStyle = { backgroundColor: 'white', borderRadius: '0.5rem', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', border: '1px solid #e5e7eb', padding: '1.5rem' };
+  const previewTitleStyle = { fontSize: '1.25rem', fontWeight: '600', color: '#111827', marginBottom: '1.5rem' };
+  const resumeContainerStyle = { border: '1px solid #d1d5db', borderRadius: '0.5rem', overflow: 'hidden', backgroundColor: 'white' };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div style={mainContainerStyle}>
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center space-x-3">
-              <FileText className="w-8 h-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-900">Resume Generator</h1>
+      <header style={headerStyle}>
+        <div style={headerContainerStyle}>
+          <div style={headerContentStyle}>
+            <div style={logoStyle}>
+              <FileText style={{ width: '2rem', height: '2rem', color: '#2563eb' }} />
+              <h1 style={titleStyle}>Resume Generator</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2">
-                <Save className="w-4 h-4 text-gray-500" />
-                <span className="text-sm text-gray-500">
-                  {isSaved ? 'Saved' : 'Saving...'}
-                </span>
+            <div style={headerActionsStyle}>
+              <div style={saveStatusStyle}>
+                <Save style={{ width: '1rem', height: '1rem' }} />
+                <span>{isSaved ? 'Saved' : 'Saving...'}</span>
               </div>
               <button
                 onClick={handlePrint}
-                className="btn-primary flex items-center space-x-2"
+                style={btnPrimaryStyle}
+                onMouseEnter={e => (e.target.style.backgroundColor = '#1d4ed8')}
+                onMouseLeave={e => (e.target.style.backgroundColor = '#2563eb')}
               >
-                <Download className="w-4 h-4" />
-                <span>Export PDF</span>
+                <Download style={{ width: '1rem', height: '1rem' }} /> Export PDF
               </button>
               <button
                 onClick={clearAllData}
-                className="btn-secondary"
+                style={btnSecondaryStyle}
+                onMouseEnter={e => (e.target.style.backgroundColor = '#e5e7eb')}
+                onMouseLeave={e => (e.target.style.backgroundColor = '#f3f4f6')}
               >
                 Clear All
               </button>
@@ -147,45 +156,30 @@ function App() {
         </div>
       </header>
 
-      {/* Main content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Form Section */}
-          <div className="lg:w-1/2">
-            {/* Section Navigation */}
-            <div className="section-card mb-6">
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4 gap-2">
-                {sections.map(section => (
-                  <button
-                    key={section.id}
-                    onClick={() => setActiveSection(section.id)}
-                    className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                      activeSection === section.id
-                        ? 'bg-blue-100 text-blue-700 border border-blue-300'
-                        : 'bg-gray-50 text-gray-700 hover:bg-gray-100 border border-gray-200'
-                    }`}
-                  >
-                    {section.label}
+      {/* Main */}
+      <div style={contentStyle}>
+        <div style={layoutStyle}>
+          <div style={formSectionStyle}>
+            <div style={sectionCardStyle}>
+              <div style={navigationGridStyle}>
+                {sections.map(sec => (
+                  <button key={sec.id} onClick={() => setActiveSection(sec.id)} style={navButtonStyle(activeSection === sec.id)}>
+                    {sec.label}
                   </button>
                 ))}
               </div>
             </div>
-
-            {/* Active Form */}
-            <div className="section-card">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                {sections.find(s => s.id === activeSection)?.label}
-              </h2>
+            <div style={sectionCardStyle}>
+              <h2 style={sectionTitleStyle}>{sections.find(s => s.id === activeSection)?.label}</h2>
               {renderActiveForm()}
             </div>
           </div>
 
-          {/* Preview Section */}
-          <div className="lg:w-1/2">
-            <div className="sticky top-8">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Live Preview</h2>
-                <div className="border border-gray-300 rounded-lg overflow-hidden bg-white">
+          <div style={previewSectionStyle}>
+            <div style={previewContainerStyle}>
+              <div style={previewCardStyle}>
+                <h2 style={previewTitleStyle}>Live Preview</h2>
+                <div style={resumeContainerStyle}>
                   <ResumePreview ref={resumeRef} data={resumeData} />
                 </div>
               </div>
