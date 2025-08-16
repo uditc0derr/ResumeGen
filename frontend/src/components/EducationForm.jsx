@@ -250,13 +250,13 @@ const EducationForm = ({ data, onChange }) => {
             </div>
 
             <div style={fullWidthStyle}>
-              <label style={labelStyle}>GPA (Optional)</label>
+              <label style={labelStyle}>CGPA (Optional)</label>
               <input
                 type="text"
                 style={inputStyle}
                 value={education.gpa}
                 onChange={(e) => updateEducation(education.id, 'gpa', e.target.value)}
-                placeholder="3.85/4.0"
+                placeholder="7.5/10"
                 onFocus={(e) => {
                   e.target.style.borderColor = '#3b82f6';
                   e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';

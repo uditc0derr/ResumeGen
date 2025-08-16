@@ -93,7 +93,7 @@ const PersonalInfoForm = ({ data, onChange }) => {
             style={inputStyle}
             value={data.phone}
             onChange={(e) => handleChange('phone', e.target.value)}
-            placeholder="+1 (555) 123-4567"
+            placeholder="+91 xxxxxxxxxx"
             onFocus={(e) => {
               e.target.style.borderColor = '#3b82f6';
               e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';

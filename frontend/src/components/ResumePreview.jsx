@@ -106,7 +106,7 @@ const ResumePreview = forwardRef(({ data }, ref) => {
   };
 
   const subtitleStyle = {
-    fontStyle: 'italic',
+    fontStyle: 'bold',
     fontSize: '1em',
     color: '#130810'
   };
@@ -230,8 +230,9 @@ const ResumePreview = forwardRef(({ data }, ref) => {
                 <div>
                   <div style={titleStyle}>{edu.institution}</div>
                   <div style={subtitleStyle}>
-                    {edu.degree}{edu.field && ` in ${edu.field}`}
-                    {edu.gpa && ` • GPA: ${edu.gpa}`}
+                    {edu.degree}{edu.field && ` , ${edu.field}`}
+                    <br />
+                    {edu.gpa && `Aggregrate: ${edu.gpa}`}
                   </div>
                 </div>
                 <div>
