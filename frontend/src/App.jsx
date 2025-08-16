@@ -66,7 +66,15 @@ function App() {
   };
 
   const handlePrint = useReactToPrint({
-    content: () => resumeRef.current,
+    content: () => {
+    console.log('resumeRef.current:', resumeRef.current);
+    if (!resumeRef.current) {
+      console.error('Resume ref is not set');
+      return null;
+    }
+    return resumeRef.current;
+  },
+    // content: () => resumeRef.current,
     documentTitle: `${resumeData.personalInfo.fullName || 'Resume'}.pdf`,
     pageStyle: '@page { margin: 0.5in; }'
   });

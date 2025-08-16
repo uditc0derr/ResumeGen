@@ -1,6 +1,7 @@
 import React, { forwardRef } from 'react';
 
 const ResumePreview = forwardRef(({ data }, ref) => {
+ 
   const isMobile = window.innerWidth < 768;
 
   const hasContent = (section) => {
