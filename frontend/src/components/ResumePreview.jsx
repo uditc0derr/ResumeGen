@@ -37,10 +37,10 @@ const ResumePreview = forwardRef(({ data }, ref) => {
   const formatSkillsSection = () => {
     const { programmingLanguages, frameworks, tools, databases } = data.skills;
     const skillCategories = [
-      { name: 'Programming Languages', items: programmingLanguages },
+      { name: 'Programming Languages & Databases', items: programmingLanguages },
       { name: 'Frameworks & Libraries', items: frameworks },
       { name: 'Tools & Technologies', items: tools },
-      { name: 'Databases', items: databases }
+      { name: 'Soft Skills', items: databases }
     ].filter(category => category.items.length > 0);
 
     return skillCategories;
@@ -281,13 +281,13 @@ const ResumePreview = forwardRef(({ data }, ref) => {
                     )}
                     {project.githubLink && (
                       <>
-                        {' • '}
+                        {'    • '}
                         <a href={project.githubLink} style={linkStyle}>GitHub</a>
                       </>
                     )}
                   </div>
                   {project.technologies && (
-                    <div style={subtitleStyle}>{project.technologies}</div>
+                    <div style={subtitleStyle}>Tech Stack : {project.technologies}</div>
                   )}
                 </div>
               </div>

@@ -48,14 +48,14 @@ const SkillsForm = ({ data, onChange }) => {
     <div style={containerStyle}>
       <div>
         <label style={labelStyle}>
-          Programming Languages
+          Programming Languages & Database
         </label>
         <input
           type="text"
           style={inputStyle}
           value={getSkillsString(data.programmingLanguages)}
           onChange={(e) => handleSkillsChange('programmingLanguages', e.target.value)}
-          placeholder="JavaScript, Python, Java, C++, etc."
+          placeholder="JavaScript, Python, MongoDB, MySQL etc."
           onFocus={(e) => {
             e.target.style.borderColor = '#3b82f6';
             e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
@@ -114,14 +114,14 @@ const SkillsForm = ({ data, onChange }) => {
 
       <div>
         <label style={labelStyle}>
-          Databases
+         Soft Skills
         </label>
         <input
           type="text"
           style={inputStyle}
           value={getSkillsString(data.databases)}
           onChange={(e) => handleSkillsChange('databases', e.target.value)}
-          placeholder="MySQL, PostgreSQL, MongoDB, Redis, etc."
+          placeholder="Communication, Teamwork, Problem-Solving, Leadership, etc."
           onFocus={(e) => {
             e.target.style.borderColor = '#3b82f6';
             e.target.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.1)';
