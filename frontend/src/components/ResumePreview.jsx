@@ -73,7 +73,7 @@ const ResumePreview = forwardRef(({ data }, ref) => {
 
   const contactInfoStyle = {
     fontSize: '0.9em',
-    color: '#666666'
+    color: '#1a07ebff'
   };
 
   const sectionStyle = {
@@ -155,7 +155,7 @@ const ResumePreview = forwardRef(({ data }, ref) => {
   };
 
   return (
-    <div ref={ref} style={resumeStyle}>
+    <div ref={ref} style={resumeStyle} className="resume-container">
       {/* Header */}
       <header style={headerStyle}>
         {data.personalInfo.fullName && (
